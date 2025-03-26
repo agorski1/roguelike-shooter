@@ -1,11 +1,15 @@
 ﻿#include "Entity.h"
 #include <cassert>
 #include <iostream>
+#include "Utility.h"
 
-Entity::Entity(int hitpoints)
+Entity::Entity(int hitpoints, const sf::Texture& texture, Animation::EntityType entityType)
 	: mVelocity()
 	, mHitpoints(hitpoints)
+	, mAnimation(entityType)
 {
+	mAnimation.setTexture(texture);
+	centerOrigin(mAnimation);
 }
 
 
@@ -65,7 +69,18 @@ sf::Vector2f Entity::getVelocity() const
 
 void Entity::updateCurrent(sf::Time dt, CommandQueue& commands)
 {
+	mAnimation.update(dt);
 	move(mVelocity * dt.asSeconds());
+}
+
+void Entity::drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const
+{
+	target.draw(mAnimation, states);
+}
+
+void Entity::setAnimationType(AnimationType type)
+{
+	mAnimation.setAnimationType(type);
 }
 
 

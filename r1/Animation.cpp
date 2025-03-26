@@ -25,12 +25,16 @@ Animation::Animation(EntityType entityType)
 Animation::Animation(const sf::Texture& texture, EntityType entityType)
     : Animation(entityType)
 {
-    setTexture(texture);
-}
+} 
 
 void Animation::setTexture(const sf::Texture& texture)
 {
     mSprite.setTexture(texture);
+    mSprite.setTextureRect(sf::IntRect(
+        mCurrentFrame * Table[mEntityType].frameSize.y,
+        static_cast<int>(mCurrentType) * Table[mEntityType].frameSize.x,
+        Table[mEntityType].frameSize.y,
+        Table[mEntityType].frameSize.x));
 }
 
 const sf::Texture* Animation::getTexture() const
@@ -109,16 +113,13 @@ int Animation::getNumFramesForRow(AnimationType type) const
 
 void Animation::update(sf::Time dt)
 {
-    // Aktualizujemy czas, który upłynął od ostatniej zmiany klatki
     mElapsedTime += dt;
 
-    // Obliczamy czas trwania jednej klatki
     int numFrames = getNumFramesForRow(mCurrentType);
     if (numFrames <= 0) return;
 
     sf::Time frameTime = mDuration / static_cast<float>(numFrames);
 
-    // Jeśli upłynął czas na zmianę klatki
     while (mElapsedTime >= frameTime)
     {
         mElapsedTime -= frameTime;

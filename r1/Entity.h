@@ -2,13 +2,14 @@
 #include "SFML/System/Time.hpp"
 #include "SFML/System/Vector2.hpp"
 #include "SceneNode.h"
+#include "Animation.h"
 
 class CommandQueue;
 
 class Entity : public SceneNode
 {
 public:	
-	explicit Entity(int hitpoints);
+	explicit Entity(int hitpoints, const sf::Texture& texture, Animation::EntityType entityType);
 	void damage(int points);
 	void destroy();
 	void remove();
@@ -27,7 +28,12 @@ public:
 
 protected:
 	virtual void updateCurrent(sf::Time dt, CommandQueue& commands);
+	virtual void updateAnimation(sf::Time dt) = 0;
+	virtual void drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const;
+	void setAnimationType(AnimationType type);
+
 private:
+	Animation mAnimation;
 	sf::Vector2f mVelocity;
 	int mHitpoints;
 };
