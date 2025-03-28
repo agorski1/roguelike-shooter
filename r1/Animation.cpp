@@ -22,9 +22,10 @@ Animation::Animation(EntityType entityType)
 {
 }
 
-Animation::Animation(const sf::Texture& texture, EntityType entityType)
+Animation::Animation(const TextureHolder& texture, EntityType entityType)
     : Animation(entityType)
 {
+    setTexture(texture.get(Table[mEntityType].texture));
 } 
 
 void Animation::setTexture(const sf::Texture& texture)

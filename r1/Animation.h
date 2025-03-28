@@ -4,8 +4,7 @@
 #include "SFML/Graphics/Transformable.hpp"
 #include "SFML/System/Time.hpp"
 #include "SFML/Graphics/Sprite.hpp"
-
-#pragma once
+#include "ResourceIdentifiers.h"
 
 #include <SFML/Graphics.hpp>
 #include <unordered_map>
@@ -30,7 +29,7 @@ public:
     };
 
     explicit Animation(EntityType entityType);
-    explicit Animation(const sf::Texture& texture, EntityType entityType);
+    explicit Animation(const TextureHolder& textures, EntityType entityType);
 
     void setTexture(const sf::Texture& texture);
     const sf::Texture* getTexture() const;
