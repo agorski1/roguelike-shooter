@@ -3,12 +3,11 @@
 #include <iostream>
 #include "Utility.h"
 
-Entity::Entity(int hitpoints, const sf::Texture& texture, Animation::EntityType entityType)
+Entity::Entity(int hitpoints, const TextureHolder& textures, Animation::EntityType entityType)
 	: mVelocity()
 	, mHitpoints(hitpoints)
-	, mAnimation(entityType)
+	, mAnimation(textures, entityType)
 {
-	mAnimation.setTexture(texture);
 	centerOrigin(mAnimation);
 }
 

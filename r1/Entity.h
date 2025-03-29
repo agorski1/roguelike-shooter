@@ -3,13 +3,15 @@
 #include "SFML/System/Vector2.hpp"
 #include "SceneNode.h"
 #include "Animation.h"
+#include "ResourceIdentifiers.h"
+
 
 class CommandQueue;
 
 class Entity : public SceneNode
 {
 public:	
-	explicit Entity(int hitpoints, const sf::Texture& texture, Animation::EntityType entityType);
+	explicit Entity(int hitpoints, const TextureHolder& textures, Animation::EntityType entityType);
 	void damage(int points);
 	void destroy();
 	void remove();
