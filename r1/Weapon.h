@@ -5,6 +5,8 @@
 #include <SFML/Graphics/Texture.hpp>
 #include "ResourceIdentifiers.h"
 
+class CommandQueue;
+
 class Weapon : public sf::Transformable, public sf::Drawable
 {
 public:
@@ -19,14 +21,14 @@ public:
 	};
 
 	explicit Weapon(WeaponType weaponType, const TextureHolder& textures);
-	void fire();
+	void fire(CommandQueue& commands);
 	void reload();
 	bool isReloading() const;
 	void setAmmo(int ammo);
 	int getAmmo() const;
 
 
-	void update();
+	void update(sf::Time dt, CommandQueue& commands);
 	virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 	void setAimDirection(sf::Vector2f direction);
 

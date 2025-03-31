@@ -1,6 +1,8 @@
 ﻿#include "Weapon.h"
 #include "DataTables.h"
 #include "Utility.h"
+#include "CommandQueue.h"
+
 
 namespace
 {
@@ -25,45 +27,39 @@ Weapon::Weapon(WeaponType weaponType, const TextureHolder& textures)
 	//mHandOffset = sf::Vector2f(25.f, 0.f); // 25 pikseli na prawo od środka
 }
 
-void Weapon::fire()
+void Weapon::fire(CommandQueue& commands)
 {
-    if (mCurrentAmmo > 0 && mTimeSinceLastShot >= sf::seconds(1.f / mFireRate))
+    std::cout << "Current ammo" << mCurrentAmmo << std::endl;
+	std::cout << "Czas od ostatniego strzału: " << mTimeSinceLastShot.asSeconds() << std::endl;
+	if ((mCurrentAmmo > 0) && (mTimeSinceLastShot >= sf::seconds(1.f / mFireRate)))
 	{
 		mCurrentAmmo--;
 		mTimeSinceLastShot = sf::Time::Zero;
+
+        std::cout << "Strzał!" << std::endl;
 	}
 }
 
 
-void Weapon::update()
+void Weapon::update(sf::Time dt, CommandQueue& commands)
 {
-    if (mAimDirection.x == 0.f && mAimDirection.y == 0.f)
-        return;
+	mTimeSinceLastShot += dt;
 
-    // Oblicz kąt w stopniach
-    float angle = std::atan2(mAimDirection.y, mAimDirection.x) * 180.f / 3.14159265f;
+	if (mAimDirection.x == 0.f && mAimDirection.y == 0.f)
+		return;
 
-    // Określ, czy broń powinna być odwrócona (kąt > 90 lub < -90)
-    bool shouldFlip = (angle > 90.f || angle < -90.f);
+	float angle = std::atan2(mAimDirection.y, mAimDirection.x) * 180.f / 3.14159265f;
 
-    // Ustaw skalę sprite'a w zależności od tego, czy powinien być odwrócony
-    if (shouldFlip != mIsFlipped)
-    {
-        mIsFlipped = shouldFlip;
-        if (shouldFlip)
-        {
-            mSprite.setScale(1.f, -1.f);  // Odwrócenie w poziomie
-        }
-        else
-        {
-            mSprite.setScale(1.f, 1.f);   // Przywrócenie normalnej skali
-        }
-    }
+	bool shouldFlip = (angle > 90.f || angle < -90.f);
 
-    
+	if (shouldFlip != mIsFlipped)
+	{
+		mIsFlipped = shouldFlip;
+		mSprite.setScale(1.f, shouldFlip ? -1.f : 1.f);  
+	}
 
-    // Ustaw rotację
-    mSprite.setRotation(angle);
+	// Aktualizacja rotacji sprite’a broni
+	mSprite.setRotation(angle);
 }
 
 void Weapon::draw(sf::RenderTarget& target, sf::RenderStates states) const
@@ -73,7 +69,6 @@ void Weapon::draw(sf::RenderTarget& target, sf::RenderStates states) const
 
 void Weapon::setAimDirection(sf::Vector2f direction)
 {
-	
-	mAimDirection = direction;
+	if (direction != sf::Vector2f(0.f, 0.f))
+		mAimDirection = unitVector(direction);
 }
-
