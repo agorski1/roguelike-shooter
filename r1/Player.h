@@ -27,7 +27,8 @@ public:
 	void handleEvent(const sf::Event event, CommandQueue& commands, const sf::View& worldView);
 	void handleRealtimeInput(CommandQueue& commands, const sf::View& worldView);
 
-	const sf::Vector2f& getMousePosition() const;
+	const sf::Vector2f& getMousePositionWorld() const;
+	const sf::Vector2i& getMousePositionLocal() const;
 
 private:
 	void initializeActions();
@@ -40,6 +41,8 @@ private:
 	std::map<sf::Keyboard::Key, Action> mKeyBinding;
 	std::map<sf::Mouse::Button, Action> mMouseBinding;
 	std::map<Action, Command> mActionBinding;
-	sf::Vector2f mMousePosition;
+	sf::Vector2f mMousePositionWorld;
+	sf::Vector2i mMousePositionLocal;
+
 };
 

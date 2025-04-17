@@ -102,7 +102,8 @@ void Player::handleRealtimeInput(CommandQueue& commands, const sf::View& worldVi
 
 	sf::Vector2i mousePixelPos = sf::Mouse::getPosition(); // Pozycja myszy w pikselach
 	sf::Vector2f mouseWorldPos = mTarget.mapPixelToCoords(mousePixelPos, worldView); // Pozycja w świecie
-	mMousePosition = mouseWorldPos; // Aktualizacja pozycji myszy
+	mMousePositionLocal = mousePixelPos;
+	mMousePositionWorld = mouseWorldPos; // Aktualizacja pozycji myszy
 
 	Command aimCommand;
 	aimCommand.category = Category::PlayerCharacter;
@@ -115,10 +116,17 @@ void Player::handleRealtimeInput(CommandQueue& commands, const sf::View& worldVi
 
 }
 
-const sf::Vector2f& Player::getMousePosition() const
+const sf::Vector2f& Player::getMousePositionWorld() const
 {
-	return mMousePosition;
+	return mMousePositionWorld;
 }
+
+
+const sf::Vector2i& Player::getMousePositionLocal() const
+{
+	return mMousePositionLocal;
+}
+
 
 void Player::initializeActions()
 {

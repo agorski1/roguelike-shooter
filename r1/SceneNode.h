@@ -27,7 +27,7 @@ public:
 	void attachChild(Ptr child);
 	Ptr detachChild(const SceneNode& node);
 
-	sf::Transform getWolrdTranform() const;
+	sf::Transform getWorldTransform() const;
 	sf::Vector2f getWorldPosition() const;
 
 	void update(sf::Time dt, CommandQueue& commands);

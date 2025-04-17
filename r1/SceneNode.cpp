@@ -3,6 +3,8 @@
 #include "Utility.h"
 #include <iostream>
 #include "CommandQueue.h"
+#include "SFML/Graphics/RectangleShape.hpp"
+#include "SFML/Graphics/RenderTarget.hpp"
 
 SceneNode::SceneNode(Category::Type category)
 	: mChildren()
@@ -31,7 +33,7 @@ SceneNode::Ptr SceneNode::detachChild(const SceneNode& node)
 	return result;
 }
 
-sf::Transform SceneNode::getWolrdTranform() const
+sf::Transform SceneNode::getWorldTransform() const
 {
 	sf::Transform transform = sf::Transform::Identity;
 
@@ -45,7 +47,7 @@ sf::Transform SceneNode::getWolrdTranform() const
 
 sf::Vector2f SceneNode::getWorldPosition() const
 {
-	return getWolrdTranform() * sf::Vector2f();
+	return getWorldTransform() * sf::Vector2f();
 }
 
 
@@ -135,6 +137,7 @@ void SceneNode::checkSceneCollision(SceneNode& sceneGraph, std::set<Pair>& colli
 		checkSceneCollision(*child, collisionPairs);
 	}
 }
+
 bool SceneNode::isMarkedForRemoval() const
 {
 	return isDestroyed();
