@@ -1,163 +1,143 @@
-﻿#include "Animation.h"
+#include "Animation.h"
 #include "SFML/Graphics/RenderTarget.hpp"
 #include "SFML/Graphics/Texture.hpp"
-#include "DataTables.h"
-#include <iostream>
 
-namespace
+void Animation::update(sf::Time dt)
 {
-    const std::vector<AnimationData> Table = initializeAnimationData();
+	sf::Time timePerFrame = mDuration / static_cast<float>(mNumFrames);
+	mElapsedTime += dt;
+
+	sf::Vector2i textureBounds(mSprite.getTexture()->getSize());
+	sf::IntRect textureRect = mSprite.getTextureRect();
+
+	if (mCurrentFrame == 0)
+		textureRect = sf::IntRect(0, 0, mFrameSize.x, mFrameSize.y);
+
+	while (mElapsedTime >= timePerFrame && (mCurrentFrame <= mNumFrames || mRepeat))
+	{
+		textureRect.left += textureRect.width;
+
+		if (textureRect.left + textureRect.width > textureBounds.x)
+		{
+			textureRect.left = 0;
+			textureRect.top += textureRect.height;
+		}
+
+		mElapsedTime -= timePerFrame;
+		if (mRepeat)
+		{
+			mCurrentFrame = (mCurrentFrame + 1) % mNumFrames;
+
+			if (mCurrentFrame == 0)
+				textureRect = sf::IntRect(0, 0, mFrameSize.x, mFrameSize.y);
+		}
+		else
+		{
+			mCurrentFrame++;
+		}
+	}
+
+	mSprite.setTextureRect(textureRect);
 }
 
-Animation::Animation(EntityType entityType)
-    : mEntityType(entityType)
-    , mSprite()
-    , mCurrentType(AnimationType::IdleDown)
-    , mCurrentFrame(0)
-    , mElapsedTime(sf::Time::Zero)
-    , mFrameSize(Table[mEntityType].frameSize)
-    , mDuration(Table[mEntityType].duration)
-    , mRepeat(Table[mEntityType].repeat)
-    , mFrameCountMap(Table[mEntityType].frameCounts)
+void Animation::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
+	states.transform *= getTransform();
+	target.draw(mSprite, states);
 }
 
-Animation::Animation(const TextureHolder& texture, EntityType entityType)
-    : Animation(entityType)
+Animation::Animation()
+	: mSprite()
+	, mFrameSize()
+	, mNumFrames(0)
+	, mCurrentFrame(0)
+	, mDuration(sf::Time::Zero)
+	, mElapsedTime(sf::Time::Zero)
+	, mRepeat(false)
 {
-    setTexture(texture.get(Table[mEntityType].texture));
-} 
+
+}
+
+Animation::Animation(const sf::Texture& texture)
+	: mSprite(texture)
+	, mFrameSize()
+	, mNumFrames(0)
+	, mCurrentFrame(0)
+	, mDuration(sf::Time::Zero)
+	, mElapsedTime(sf::Time::Zero)
+	, mRepeat(false)
+{
+}
 
 void Animation::setTexture(const sf::Texture& texture)
 {
-    mSprite.setTexture(texture);
-    mSprite.setTextureRect(sf::IntRect(
-        mCurrentFrame * Table[mEntityType].frameSize.y,
-        static_cast<int>(mCurrentType) * Table[mEntityType].frameSize.x,
-        Table[mEntityType].frameSize.y,
-        Table[mEntityType].frameSize.x));
+	mSprite.setTexture(texture);
 }
 
 const sf::Texture* Animation::getTexture() const
 {
-    return mSprite.getTexture();
+	return mSprite.getTexture();
 }
 
 void Animation::setFrameSize(sf::Vector2i frameSize)
 {
-    mFrameSize = frameSize;
+	mFrameSize = frameSize;
 }
 
 sf::Vector2i Animation::getFrameSize() const
 {
-    return mFrameSize;
+	return mFrameSize;
+}
+
+void Animation::setNumFrames(std::size_t numFrames)
+{
+	mNumFrames = numFrames;
+}
+
+std::size_t Animation::getNumFrames() const
+{
+	return mNumFrames;
 }
 
 void Animation::setDuration(sf::Time duration)
 {
-    mDuration = duration;
+	mDuration = duration;
 }
 
 sf::Time Animation::getDuration() const
 {
-    return mDuration;
+	return mDuration;
 }
 
 void Animation::setRepeating(bool flag)
 {
-    mRepeat = flag;
+	mRepeat = flag;
 }
 
 bool Animation::isRepeating() const
 {
-    return mRepeat;
+	return mRepeat;
 }
 
 void Animation::restart()
 {
-    mCurrentFrame = 0;
-    mElapsedTime = sf::Time::Zero;
+	mCurrentFrame = 0;
 }
 
 bool Animation::isFinished() const
 {
-    return !mRepeat && mCurrentFrame >= getNumFramesForRow(mCurrentType);
-}
-
-void Animation::setAnimationType(AnimationType type)
-{
-    if (mCurrentType != type)
-    {
-        mCurrentType = type;
-        restart();
-    }
-}
-
-AnimationType Animation::getAnimationType() const
-{
-    return mCurrentType;
-}
-
-void Animation::setNumFramesForRow(AnimationType type, int numFrames)
-{
-    mFrameCountMap[type] = numFrames;
-}
-
-int Animation::getNumFramesForRow(AnimationType type) const
-{
-    auto it = mFrameCountMap.find(type);
-    if (it != mFrameCountMap.end())
-        return it->second;
-
-    return 1;
-}
-
-void Animation::update(sf::Time dt)
-{
-    mElapsedTime += dt;
-
-    int numFrames = getNumFramesForRow(mCurrentType);
-    if (numFrames <= 0) return;
-
-    sf::Time frameTime = mDuration / static_cast<float>(numFrames);
-
-    while (mElapsedTime >= frameTime)
-    {
-        mElapsedTime -= frameTime;
-
-        // Przechodzimy do kolejnej klatki
-        if (mCurrentFrame + 1 < numFrames)
-        {
-            mCurrentFrame++;
-        }
-        else if (mRepeat) // Jeśli animacja się powtarza, wracamy do pierwszej klatki
-        {
-            mCurrentFrame = 0;
-        }
-
-        // Aktualizujemy teksturę, przesuwając "widok" sprite'a na odpowiednią klatkę
-        int frameWidth = mFrameSize.x;
-        int frameHeight = mFrameSize.y;
-        mSprite.setTextureRect(sf::IntRect(mCurrentFrame * frameWidth,
-            static_cast<int>(mCurrentType) * frameHeight,
-            frameWidth,
-            frameHeight));
-    }
-}
-
-
-void Animation::draw(sf::RenderTarget& target, sf::RenderStates states) const
-{
-    states.transform *= getTransform();
-    target.draw(mSprite, states);
+	return mCurrentFrame >= mNumFrames;
 }
 
 sf::FloatRect Animation::getLocalBounds() const
 {
-    return sf::FloatRect(sf::Vector2f(), sf::Vector2f(mFrameSize));
+	sf::FloatRect bounds = mSprite.getLocalBounds();
+	bounds.left = 0;
+	bounds.top = 0;
+	return bounds;
 }
 
-sf::FloatRect Animation::getGlobalBounds() const
+sf::FloatRect Animation::getGloablBounds() const
 {
-    return getTransform().transformRect(getLocalBounds());
+	return getTransform().transformRect(getLocalBounds());
 }

@@ -13,6 +13,8 @@ namespace Category
 		EnemyProjectile = 1 << 5,
 		ParticleSystem = 1 << 6,
 		SoundEffect = 1 << 7,
+		Portal = 1 << 8,
+		TileMap = 1 << 9,
 
 		Projectile = PlayerProjectile | EnemyProjectile,
 	};
