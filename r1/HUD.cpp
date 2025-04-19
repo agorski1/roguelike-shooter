@@ -48,7 +48,6 @@ HUD::HUD(sf::RenderTarget& outputTarget)
 
 void HUD::update(sf::Time dt, const sf::Vector2i& mousePos)
 {
-	std::cout << "Mouse pos: " << mousePos.x << " " << mousePos.y << std::endl;
     mCrosshair.setPosition(sf::Vector2f(mousePos));
 	updateHealthDisplay();
     updateAmmoDisplay();

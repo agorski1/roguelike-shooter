@@ -20,5 +20,5 @@ void AnimatedNode::drawCurrent(sf::RenderTarget& target, sf::RenderStates states
 
 sf::FloatRect AnimatedNode::getBoundingRect() const
 {
-	return getWorldTransform().transformRect(mAnimation.getLocalBounds());
+	return getWorldTransform().transformRect(mAnimation.getGloablBounds());
 }
