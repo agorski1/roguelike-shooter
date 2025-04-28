@@ -94,7 +94,6 @@ void PlayerCharacter::drawCurrent(sf::RenderTarget& target, sf::RenderStates sta
     {
         mWeapon->draw(target, states);
     }
-
 }
 
 void PlayerCharacter::updateAnimation(sf::Time dt)
@@ -156,8 +155,9 @@ void PlayerCharacter::notifyStatsObservers()
 
 sf::FloatRect PlayerCharacter::getBoundingRect() const
 {
-    return sf::FloatRect();
+    return getWorldTransform().transformRect(mAnimation.getGlobalBounds());
 }
+
 
 void PlayerCharacter::updateDirection()
 {

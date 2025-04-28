@@ -25,6 +25,7 @@ public:
 	void reloadWeapon();
 	void addStatsObserver(StatsObserver* observer);
 	void removeStatsObserver(StatsObserver* observer);
+	virtual sf::FloatRect getBoundingRect() const;
 
 private:
 	virtual void updateCurrent(sf::Time dt, CommandQueue& commands);
@@ -33,7 +34,6 @@ private:
 	void updateAnimation(sf::Time dt);
 	void notifyStatsObservers();
 
-	virtual sf::FloatRect getBoundingRect() const;
 
 private:
 	sf::Vector2f mHandPosition;
