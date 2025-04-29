@@ -1,6 +1,6 @@
 #pragma once
 #include "Entity.h"
-#include "Animation.h"
+#include "CharacterAnimation.h"
 
 class Enemy : public Entity
 {
@@ -13,7 +13,7 @@ class Enemy : public Entity
 		Right,
 	};
 
-	Enemy(const TextureHolder& textures, Animation::EntityType entityType);
+	Enemy(const TextureHolder& textures, CharacterAnimation::EntityType entityType);
 
 	float getSpeed();
 	virtual unsigned int getCategory() const override;
@@ -22,9 +22,10 @@ private:
 	virtual void updateCurrent(sf::Time dt, CommandQueue& commands);
 	virtual void drawCurrent(sf::RenderTarget& target, sf::RenderStates states) const;
 	void updateDirection();
-	virtual void updateAnimation(sf::Time dt) override;
+	void updateAnimation(sf::Time dt);
 
 private:
+	CharacterAnimation mAnimation;
 	float mSpeed;
 	Direction mDirection;
 };

@@ -1,7 +1,7 @@
 #include "Enemy.h"
 #include "DataTables.h"
 
-Enemy::Enemy(const TextureHolder& textures, Animation::EntityType entityType)
+Enemy::Enemy(const TextureHolder& textures, CharacterAnimation::EntityType entityType)
 	: Entity(100)
 	, mSpeed(0.f)
 	, mDirection(Direction::Down)
