@@ -37,7 +37,7 @@ private:
     std::vector<std::vector<Tile>> mMap;
     std::vector<sf::Sprite> mSprites;
     sf::Vector2f mTileSize;
-    SceneNode::Ptr mPortal;
+    std::unique_ptr<Portal> mPortal;
     std::mt19937 mRandom; 
     bool mPlayerEnteredPortal;
 };

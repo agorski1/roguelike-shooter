@@ -1,5 +1,6 @@
 ﻿#include "TileMap.h"
 #include "DataTables.h"
+#include "SpriteNode.h"
 
 TileMap::TileMap(TextureHolder& textures)
     : mTextures(textures)
@@ -13,8 +14,8 @@ TileMap::TileMap(TextureHolder& textures)
 void TileMap::load(const std::vector<std::vector<Tile>>& map, const LevelTextures& textures)
 {
     mMap = map;
-    mSprites.clear();
     clearPortal(); 
+    mSprites.clear();
 
     for (int y = 0; y < mMap.size(); ++y)
     {
@@ -72,7 +73,11 @@ void TileMap::setTile(int x, int y, TileType type)
 void TileMap::spawnPortal()
 {
     mPortal = std::make_unique<Portal>(mTextures.get(Textures::Portal));
-
+    mPortal->mAnimation.setFrameSize(sf::Vector2i(64, 64));
+    mPortal->mAnimation.setNumFrames(16);
+    mPortal->mAnimation.setDuration(sf::seconds(2.f));
+    mPortal->mAnimation.setRepeating(true);
+    
     std::vector<sf::Vector2i> floorTiles;
     for (int y = 0; y < mMap.size(); ++y)
     {
@@ -91,6 +96,8 @@ void TileMap::spawnPortal()
         sf::Vector2i pos = floorTiles[dis(mRandom)];
         mPortal->setPosition(pos.x * mTileSize.x, pos.y * mTileSize.y);
         attachChild(std::move(mPortal));
+
+        std::cout << "Portal spawned at: " << pos.x * mTileSize.x << ", " << pos.y * mTileSize.y << std::endl;
     }
 }
 
@@ -117,6 +124,10 @@ void TileMap::resetPlayerEnteredPortal()
 void TileMap::playerEnteredPortal()
 {
     mPlayerEnteredPortal = true;
+    if(mPortal)
+    {
+        mPortal->setActive(false);
+    }
 }
 
 unsigned int TileMap::getCategory() const
