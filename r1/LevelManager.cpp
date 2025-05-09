@@ -14,7 +14,7 @@ LevelManager::LevelManager(MapGenerator& mapGenerator, TileMap& tileMap, EntityM
     , mEntityManager(entityManager)
     , mSceneGraph(sceneGraph)
     , mCurrentLevelIndex(0)
-    , mLevelCompleted(true)
+    , mLevelCompleted(false)
     , mRandom(static_cast<unsigned>(std::time(nullptr)))
     , mLevelTable(levelTable)
 {
@@ -24,6 +24,7 @@ LevelManager::LevelManager(MapGenerator& mapGenerator, TileMap& tileMap, EntityM
 
 void LevelManager::generateLevel()
 {
+    std::cout << "Generating level " << mCurrentLevelIndex + 1 << std::endl;
     bool isBossLevel = (mCurrentLevelIndex + 1) % 10 == 0;
 
     LevelData levelData;
@@ -58,7 +59,7 @@ void LevelManager::update(sf::Time dt)
 }
 
 void LevelManager::checkLevelCompletion()
-{
+{   
     if (mEntityManager.getEnemyCount() == 0)
     {
         mLevelCompleted = true;
