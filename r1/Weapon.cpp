@@ -39,8 +39,6 @@ Weapon::Weapon(WeaponType weaponType, const TextureHolder& textures, PlayerChara
 
 void Weapon::fire(CommandQueue& commands)
 {
-    std::cout << "Current ammo" << mCurrentAmmo << std::endl;
-	std::cout << "Czas od ostatniego strzału: " << mTimeSinceLastShot.asSeconds() << std::endl;
 	if ((mCurrentAmmo > 0) && (mTimeSinceLastShot >= sf::seconds(1.f / mFireRate)) && !mIsReloading)
 	{
 		mCurrentAmmo--;
